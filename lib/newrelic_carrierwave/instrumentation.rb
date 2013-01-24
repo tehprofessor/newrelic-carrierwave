@@ -1,23 +1,6 @@
 require 'new_relic/agent/method_tracer'
 require 'new_relic/agent/instrumentation/controller_instrumentation'
 
-module NewRelicCarrierWave
-  module ImageProcessorTracers
-    def self.included(base)
-      base.class_eval do
-        base.send(:include, NewRelic::Agent::Instrumentation::ControllerInstrumentation)
-        base.send(:add_method_tracer, :resize_to_limit) if base.send(:respond_to?, :resize_to_limit)
-        puts "respond_to? #{base.send(:respond_to?, :resize_to_limit)}"
-        add_method_tracer(:manipulate) if respond_to?(:manipulate)
-        base.send(:add_method_tracer, :resize_to_fill) if base.send(:respond_to?, :resize_to_fill)
-        base.send(:add_method_tracer, :resize_to_fit) if base.send(:respond_to?, :resize_to_fit)
-        base.send(:add_method_tracer, :resize_and_pad) if base.send(:respond_to?, :resize_and_pad)
-        base.send(:add_method_tracer, :manipulate!) if base.send(:respond_to?, :manipulate!)
-      end
-    end
-  end
-end
-
 DependencyDetection.defer do
   @name = :carrierwave
 
@@ -49,14 +32,24 @@ DependencyDetection.defer do
         end
       end
 
+      def call_retrieve_with_newrelic_trace(identifier)
+        metrics = ["Custom/CarrierWave/Retrieve"]
+        self.class.trace_execution_scoped(metrics) do
+          call_retrieve_without_newrelic_trace(identifier)
+        end
+      end
+
       alias :call_store_without_newrelic_trace :store!
       alias :store! :call_store_with_newrelic_trace
+
+      alias :call_retrieve_without_newrelic_trace :retrieve!
+      alias :retrieve! :call_retrieve_with_newrelic_trace
     end
 
     ::CarrierWave::Uploader::Versions::ClassMethods.class_eval do
 
       def version_with_newrelic_trace(name, options = {}, &block)
-        metrics = ["Custom/Carrierwave/Version/#{name}"]
+        metrics = ["Custom/CarrierWave/Version/#{name}"]
         self.class.trace_execution_scoped(metrics) do
           version_without_newrelic_trace(name, options, &block)
         end
@@ -85,24 +78,21 @@ DependencyDetection.defer do
   executes do
     if defined?(::CarrierWave::Vips)
       ::CarrierWave::Vips.class_eval do
-        include NewRelicCarrierWave::ImageProcessorTracers
-        add_method_tracer(:resize_image) if respond_to?(:resize_image)
-      end
-    end
-  end
+        include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
-  executes do
-    if defined?(::CarrierWave::MiniMagick)
-      ::CarrierWave::MiniMagick.class_eval do
-        include NewRelicCarrierWave::ImageProcessorTracers
-      end
-    end
-  end
+        def manipulate_with_newrelic(name, options = {}, &block)
+          metrics = ["Custom/CarrierWave/Manipulate/#{name}"]
+          self.class.trace_execution_scoped(metrics) do
+            version_without_newrelic_trace(name, options, &block)
+          end
+        end
 
-  executes do
-    if defined?(::CarrierWave::RMagick)
-      ::CarrierWave::MiniMagick.class_eval do
-        include NewRelicCarrierWave::ImageProcessorTracers
+        alias :manipulate_without_newrelic :manipulate!
+        alias :manipulate! :manipulate_with_newrelic
+
+        add_method_tracer(:resize_image)
+        add_method_tracer(:resize_to_limit)
+        add_method_tracer(:resize_to_fill)
       end
     end
   end
