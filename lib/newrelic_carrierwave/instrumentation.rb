@@ -83,7 +83,7 @@ DependencyDetection.defer do
         def manipulate_with_newrelic
           metrics = ["Custom/CarrierWave/Manipulate"]
           self.class.trace_execution_scoped(metrics) do
-            manipulate_without_newrelic_trace
+            manipulate_without_newrelic
           end
         end
 
