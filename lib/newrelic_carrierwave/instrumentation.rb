@@ -44,7 +44,10 @@ DependencyDetection.defer do
 
       alias :call_store_without_newrelic_trace :store!
       alias :store! :call_store_with_newrelic_trace
+    end
 
+    ::CarrierWave::Uploader::Versions.class_eval do
+      
       def version_with_newrelic_trace(name, options = {}, &block)
         metrics = ["Custom/Carrierwave/Version"]
         self.class.trace_execution_scoped(metrics) do
@@ -56,7 +59,6 @@ DependencyDetection.defer do
       alias :version :version_with_newrelic_trace
 
     end
-
   end
 end
 
