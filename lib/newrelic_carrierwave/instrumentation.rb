@@ -3,11 +3,16 @@ require 'new_relic/agent/instrumentation/controller_instrumentation'
 
 module NewRelicCarrierWave
   module ImageProcessorTracers
-    add_transaction_tracer(:resize_to_limit) if respond_to?(:resize_to_limit)
-    add_transaction_tracer(:resize_to_fill) if respond_to?(:resize_to_fill)
-    add_transaction_tracer(:resize_to_fit) if respond_to?(:resize_to_fit)
-    add_transaction_tracer(:resize_and_pad) if respond_to?(:resize_and_pad)
-    add_transaction_tracer(:manipulate!) if respond_to?(:manipulate!)
+    def self.included(base)
+      base.class_eval do
+        base.send(:include, NewRelic::Agent::Instrumentation::ControllerInstrumentation)
+        add_transaction_tracer(:resize_to_limit) if respond_to?(:resize_to_limit)
+        add_transaction_tracer(:resize_to_fill) if respond_to?(:resize_to_fill)
+        add_transaction_tracer(:resize_to_fit) if respond_to?(:resize_to_fit)
+        add_transaction_tracer(:resize_and_pad) if respond_to?(:resize_and_pad)
+        add_transaction_tracer(:manipulate!) if respond_to?(:manipulate!)
+      end
+    end
   end
 end
 
@@ -47,7 +52,7 @@ DependencyDetection.defer do
     end
 
     ::CarrierWave::Uploader::Versions.class_eval do
-      
+
       def version_with_newrelic_trace(name, options = {}, &block)
         metrics = ["Custom/Carrierwave/Version"]
         self.class.trace_execution_scoped(metrics) do
@@ -78,7 +83,6 @@ DependencyDetection.defer do
   executes do
     if defined?(::CarrierWave::Vips)
       ::CarrierWave::Vips.class_eval do
-        include NewRelic::Agent::Instrumentation::ControllerInstrumentation
         include NewRelicCarrierWave::ImageProcessorTracers
         add_transaction_tracer(:resize_image) if respond_to?(:resize_image)
       end
@@ -88,7 +92,6 @@ DependencyDetection.defer do
   executes do
     if defined?(::CarrierWave::MiniMagick)
       ::CarrierWave::MiniMagick.class_eval do
-        include NewRelic::Agent::Instrumentation::ControllerInstrumentation
         include NewRelicCarrierWave::ImageProcessorTracers
       end
     end
@@ -97,7 +100,6 @@ DependencyDetection.defer do
   executes do
     if defined?(::CarrierWave::RMagick)
       ::CarrierWave::MiniMagick.class_eval do
-        include NewRelic::Agent::Instrumentation::ControllerInstrumentation
         include NewRelicCarrierWave::ImageProcessorTracers
       end
     end
