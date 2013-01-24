@@ -7,6 +7,8 @@ module NewRelicCarrierWave
       base.class_eval do
         base.send(:include, NewRelic::Agent::Instrumentation::ControllerInstrumentation)
         base.send(:add_method_tracer, :resize_to_limit) if base.send(:respond_to?, :resize_to_limit)
+        puts "respond_to? #{base.send(:respond_to?, :resize_to_limit)}"
+        add_method_tracer(:manipulate) if respond_to?(:manipulate)
         base.send(:add_method_tracer, :resize_to_fill) if base.send(:respond_to?, :resize_to_fill)
         base.send(:add_method_tracer, :resize_to_fit) if base.send(:respond_to?, :resize_to_fit)
         base.send(:add_method_tracer, :resize_and_pad) if base.send(:respond_to?, :resize_and_pad)
@@ -84,7 +86,7 @@ DependencyDetection.defer do
     if defined?(::CarrierWave::Vips)
       ::CarrierWave::Vips.class_eval do
         include NewRelicCarrierWave::ImageProcessorTracers
-        add_transaction_tracer(:resize_image) if respond_to?(:resize_image)
+        add_method_tracer(:resize_image) if respond_to?(:resize_image)
       end
     end
   end
