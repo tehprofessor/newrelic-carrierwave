@@ -6,11 +6,11 @@ module NewRelicCarrierWave
     def self.included(base)
       base.class_eval do
         base.send(:include, NewRelic::Agent::Instrumentation::ControllerInstrumentation)
-        add_transaction_tracer(:resize_to_limit) if respond_to?(:resize_to_limit)
-        add_transaction_tracer(:resize_to_fill) if respond_to?(:resize_to_fill)
-        add_transaction_tracer(:resize_to_fit) if respond_to?(:resize_to_fit)
-        add_transaction_tracer(:resize_and_pad) if respond_to?(:resize_and_pad)
-        add_transaction_tracer(:manipulate!) if respond_to?(:manipulate!)
+        base.send(:add_transaction_tracer, :resize_to_limit) if respond_to?(:resize_to_limit)
+        base.send(:add_transaction_tracer, :resize_to_fill) if respond_to?(:resize_to_fill)
+        base.send(:add_transaction_tracer, :resize_to_fit) if respond_to?(:resize_to_fit)
+        base.send(:add_transaction_tracer, :resize_and_pad) if respond_to?(:resize_and_pad)
+        base.send(:add_transaction_tracer, :manipulate!) if respond_to?(:manipulate!)
       end
     end
   end
@@ -54,7 +54,7 @@ DependencyDetection.defer do
     ::CarrierWave::Uploader::Versions::ClassMethods.class_eval do
 
       def version_with_newrelic_trace(name, options = {}, &block)
-        metrics = ["Custom/Carrierwave/Version"]
+        metrics = ["Custom/Carrierwave/Version/#{name}"]
         self.class.trace_execution_scoped(metrics) do
           version_without_newrelic_trace(name, options, &block)
         end
