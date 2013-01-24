@@ -6,11 +6,11 @@ module NewRelicCarrierWave
     def self.included(base)
       base.class_eval do
         base.send(:include, NewRelic::Agent::Instrumentation::ControllerInstrumentation)
-        base.send(:add_transaction_tracer, :resize_to_limit) if base.send(:respond_to?, :resize_to_limit)
-        base.send(:add_transaction_tracer, :resize_to_fill) if base.send(:respond_to?, :resize_to_fill)
-        base.send(:add_transaction_tracer, :resize_to_fit) if base.send(:respond_to?, :resize_to_fit)
-        base.send(:add_transaction_tracer, :resize_and_pad) if base.send(:respond_to?, :resize_and_pad)
-        base.send(:add_transaction_tracer, :manipulate!) if base.send(:respond_to?, :manipulate!)
+        base.send(:add_method_tracer, :resize_to_limit) if base.send(:respond_to?, :resize_to_limit)
+        base.send(:add_method_tracer, :resize_to_fill) if base.send(:respond_to?, :resize_to_fill)
+        base.send(:add_method_tracer, :resize_to_fit) if base.send(:respond_to?, :resize_to_fit)
+        base.send(:add_method_tracer, :resize_and_pad) if base.send(:respond_to?, :resize_and_pad)
+        base.send(:add_method_tracer, :manipulate!) if base.send(:respond_to?, :manipulate!)
       end
     end
   end
