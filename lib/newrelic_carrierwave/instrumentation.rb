@@ -28,7 +28,7 @@ DependencyDetection.defer do
         end
         metrics << total_metric
         self.class.trace_execution_scoped(metrics) do
-          call_storage_without_newrelic_trace(file)
+          call_store_without_newrelic_trace(file)
         end
       end
 
