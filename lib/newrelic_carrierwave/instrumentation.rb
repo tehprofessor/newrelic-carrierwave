@@ -80,10 +80,10 @@ DependencyDetection.defer do
       ::CarrierWave::Vips.class_eval do
         include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
-        def manipulate_with_newrelic
+        def manipulate_with_newrelic(&block)
           metrics = ["Custom/CarrierWave/Manipulate"]
           self.class.trace_execution_scoped(metrics) do
-            manipulate_without_newrelic
+            manipulate_without_newrelic(&block)
           end
         end
 
