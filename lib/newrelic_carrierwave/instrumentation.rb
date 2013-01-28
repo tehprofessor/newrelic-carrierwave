@@ -19,7 +19,7 @@ DependencyDetection.defer do
     ::CarrierWave::Storage::Fog.class_eval do
       def call_store_with_newrelic_trace(file)
 
-        metrics = ["External/CarrierWave/Fog"]
+        metrics = ["External/CarrierWave/Fog/store"]
 
         if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
           total_metric = 'External/allWeb'
@@ -33,7 +33,7 @@ DependencyDetection.defer do
       end
 
       def call_retrieve_with_newrelic_trace(identifier)
-        metrics = ["Custom/CarrierWave/Retrieve"]
+        metrics = ["Custom/CarrierWave/Fog/retrieve"]
         self.class.trace_execution_scoped(metrics) do
           call_retrieve_without_newrelic_trace(identifier)
         end
