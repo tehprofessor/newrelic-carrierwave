@@ -1,9 +1,47 @@
 newrelic-carrierwave
 ====================
 
-CarrierWave Instrumentation 
+## CarrierWave Instrumentation 
 
-This is currently in Alpha and only supports libvips for image processing.
+This gem provides New Relic instrumentation for the CarrierWave gem. There are two main components which are instrumented, image processing and FOG based file storage/retrieval.
+
+# Storage Methods* (FOG) 
+
+    CarrierWave::Storage::Fog#store!
+    CarrierWave::Storage::Fog#retrieve
+
+*These report under the "external" section
+
+# General Image Processor Methods
+
+    CarrierWave::Uploader::Versions::ClassMethods#version
+
+# VIPS
+
+    CarrierWave::Vips#manipulate!
+    CarrierWave::Vips#resize_image
+    CarrierWave::Vips#resize_to_limit
+    CarrierWave::Vips#resize_to_fill
+
+# RMagick
+
+
+    CarrierWave::RMagick#manipulate!
+    CarrierWave::RMagick#resize_image
+    CarrierWave::RMagick#resize_to_limit
+    CarrierWave::RMagick#resize_to_fill
+    CarrierWave::RMagick#resize_and_pad
+    CarrierWave::RMagick#resize_to_geometry_string
+    CarrierWave::RMagick#convert
+
+# MiniMagick
+
+    CarrierWave::MiniMagick#manipulate!
+    CarrierWave::MiniMagick#resize_image
+    CarrierWave::MiniMagick#resize_to_limit
+    CarrierWave::MiniMagick#resize_to_fill
+    CarrierWave::MiniMagick#resize_and_pad
+    CarrierWave::MiniMagick#convert
 
 
 ## Copyright

@@ -29,7 +29,14 @@ DependencyDetection.defer do
             end
 
             def call_retrieve_with_newrelic_trace(identifier)
-                metrics = ["Custom/CarrierWave/Fog/retrieve"]
+                metrics = ["External/CarrierWave/Fog/retrieve"]
+
+                if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
+                    total_metric = 'External/allWeb'
+                else
+                    total_metric = 'External/allOther'
+                end
+
                 self.class.trace_execution_scoped(metrics) do
                     call_retrieve_without_newrelic_trace(identifier)
                 end
@@ -98,44 +105,7 @@ DependencyDetection.defer do
                 alias :manipulate_without_newrelic :manipulate!
                 alias :manipulate! :manipulate_with_newrelic
 
-                add_method_tracer(:resize_image)
-                add_method_tracer(:resize_to_limit)
-                add_method_tracer(:resize_to_fill)
-
-            end
-        end
-    end
-end
-
-DependencyDetection.defer do
-    @name = :carrierwave_rmagick_image_processing
-
-    depends_on do
-        defined?(::CarrierWave::RMagick) &&
-        !NewRelic::Control.instance['disable_carrierwave_image_processing'] &&
-        ENV['NEWRELIC_ENABLE'].to_s !~ /false|off|no/i
-    end
-
-    executes do
-        NewRelic::Agent.logger.debug 'Installing CarrierWave (RMagick) Image Processing Instrumentation'
-    end
-
-    executes do
-        if defined?(::CarrierWave::Vips)
-            ::CarrierWave::Vips.class_eval do
-                include NewRelic::Agent::Instrumentation::ControllerInstrumentation
-
-                def manipulate_with_newrelic(&block)
-                  metrics = ["Custom/CarrierWave/Manipulate"]
-                  self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(&block)
-                  end
-                end
-
-                alias :manipulate_without_newrelic :manipulate!
-                alias :manipulate! :manipulate_with_newrelic
-
-                add_method_tracer(:resize_image)
+                add_method_tracer(:resize_image) # Used internally by the below methods
                 add_method_tracer(:resize_to_limit)
                 add_method_tracer(:resize_to_fill)
 
@@ -172,9 +142,11 @@ DependencyDetection.defer do
                 alias :manipulate_without_newrelic :manipulate!
                 alias :manipulate! :manipulate_with_newrelic
 
-                add_method_tracer(:resize_image)
                 add_method_tracer(:resize_to_limit)
                 add_method_tracer(:resize_to_fill)
+                add_method_tracer(:resize_and_pad)
+                add_method_tracer(:resize_to_geometry_string)
+                add_method_tracer(:convert)
 
             end
         end
@@ -209,9 +181,11 @@ DependencyDetection.defer do
                 alias :manipulate_without_newrelic :manipulate!
                 alias :manipulate! :manipulate_with_newrelic
 
-                add_method_tracer(:resize_image)
                 add_method_tracer(:resize_to_limit)
                 add_method_tracer(:resize_to_fill)
+                add_method_tracer(:resize_to_fit)
+                add_method_tracer(:resize_and_pad)
+                add_method_tracer(:convert)
 
             end
         end
