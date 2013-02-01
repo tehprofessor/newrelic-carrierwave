@@ -5,9 +5,9 @@ NOTE: Currently Alpha software as there are no tests yet :-(
 
 ## CarrierWave Instrumentation 
 
-This gem provides New Relic instrumentation for the CarrierWave gem. There are two main components which are instrumented, image processing and FOG based file storage/retrieval.
+This gem provides New Relic instrumentation for the CarrierWave gem. There are two main components which are instrumented, image processing and FOG based file storage/retrieval. If you have bugs or problems with this gem, please open up an issue, here. 
 
-# Storage Methods* (FOG) 
+### Storage Methods* (FOG) 
 
     CarrierWave::Storage::Fog#store!
     CarrierWave::Storage::Fog#retrieve
@@ -20,18 +20,18 @@ This gem provides New Relic instrumentation for the CarrierWave gem. There are t
 
 *These report under the "external" section
 
-# General Image Processor Methods
+### General Image Processor Methods
 
     CarrierWave::Uploader::Versions::ClassMethods#version
 
-# VIPS
+### VIPS
 
     CarrierWave::Vips#manipulate!
     CarrierWave::Vips#resize_image
     CarrierWave::Vips#resize_to_limit
     CarrierWave::Vips#resize_to_fill
 
-# RMagick
+### RMagick
 
 
     CarrierWave::RMagick#manipulate!
@@ -42,7 +42,7 @@ This gem provides New Relic instrumentation for the CarrierWave gem. There are t
     CarrierWave::RMagick#resize_to_geometry_string
     CarrierWave::RMagick#convert
 
-# MiniMagick
+### MiniMagick
 
     CarrierWave::MiniMagick#manipulate!
     CarrierWave::MiniMagick#resize_image
@@ -52,7 +52,7 @@ This gem provides New Relic instrumentation for the CarrierWave gem. There are t
     CarrierWave::MiniMagick#convert
 
 
-## Copyright
+### Copyright
 NewRelic RPM and CarrierWave have their respective licenses, please look at their documentation to find out more. 
 
 The code specific to this gem is Copyright © 2013 Servando Salazar. See [MIT-LICENSE](http://github.com/tehprofessor/newrelic-carrierwave/blob/master/MIT-LICENSE) for details.
