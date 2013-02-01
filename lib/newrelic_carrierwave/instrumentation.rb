@@ -52,7 +52,6 @@ DependencyDetection.defer do
 
         end
 
-        end
         ::CarrierWave::Storage::Fog.class_eval do
             def call_store_with_newrelic_trace(file)
                 metrics = ["External/CarrierWave/Fog/store"]
