@@ -1,6 +1,8 @@
 newrelic-carrierwave
 ====================
 
+NOTE: Currently Alpha software as there are no tests yet :-(
+
 ## CarrierWave Instrumentation 
 
 This gem provides New Relic instrumentation for the CarrierWave gem. There are two main components which are instrumented, image processing and FOG based file storage/retrieval.
@@ -9,6 +11,12 @@ This gem provides New Relic instrumentation for the CarrierWave gem. There are t
 
     CarrierWave::Storage::Fog#store!
     CarrierWave::Storage::Fog#retrieve
+    CarrierWave::Storage::Fog#authenticated_url
+    CarrierWave::Storage::Fog#public_url
+
+    ::CarrierWave::SanitizedFile#copy_to
+    ::CarrierWave::SanitizedFile#move_to
+
 
 *These report under the "external" section
 

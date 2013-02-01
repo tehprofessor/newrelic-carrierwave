@@ -12,6 +12,47 @@ DependencyDetection.defer do
     end
 
     executes do
+        ::CarrierWave::SanitizedFile.class_eval do
+
+            def call_move_to_with_newrelic_trace(new_path, permissions=nil, directory_permissions=nil)
+                metrics = ["External/CarrierWave/Fog/move_to"]
+
+                if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
+                    total_metric = 'External/allWeb'
+                else
+                    total_metric = 'External/allOther'
+                end
+
+                metrics << total_metric
+                self.class.trace_execution_scoped(metrics) do
+                    call_move_to_without_newrelic_trace(new_path, permissions, directory_permissions)
+                end
+            end
+
+            def call_copy_to_with_newrelic_trace(new_path, permissions=nil, directory_permissions=nil)
+                metrics = ["External/CarrierWave/Fog/move_to"]
+
+                if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
+                    total_metric = 'External/allWeb'
+                else
+                    total_metric = 'External/allOther'
+                end
+
+                metrics << total_metric
+                self.class.trace_execution_scoped(metrics) do
+                    call_copy_to_without_newrelic_trace(new_path, permissions, directory_permissions)
+                end
+            end
+
+            alias :call_copy_to_without_newrelic_trace :copy_to
+            alias :copy_to :call_copy_to_with_newrelic_trace
+
+            alias :call_move_to_without_newrelic_trace :move_to
+            alias :move_to :call_move_to_with_newrelic_trace
+
+        end
+
+        end
         ::CarrierWave::Storage::Fog.class_eval do
             def call_store_with_newrelic_trace(file)
                 metrics = ["External/CarrierWave/Fog/store"]
@@ -37,10 +78,47 @@ DependencyDetection.defer do
                     total_metric = 'External/allOther'
                 end
 
+                metrics << total_metric
                 self.class.trace_execution_scoped(metrics) do
                     call_retrieve_without_newrelic_trace(identifier)
                 end
             end
+
+            def call_authenticted_url_with_newrelic_trace(options = {})
+                metrics = ["External/CarrierWave/Fog/authenticated_url"]
+
+                if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
+                    total_metric = 'External/allWeb'
+                else
+                    total_metric = 'External/allOther'
+                end
+
+                metrics << total_metric
+                self.class.trace_execution_scoped(metrics) do
+                    call_authenticted_url_without_newrelic_trace(options)
+                end
+            end
+
+            def call_public_url_with_newrelic_trace
+                metrics = ["External/CarrierWave/Fog/public_url"]
+
+                if NewRelic::Agent::Instrumentation::MetricFrame.recording_web_transaction?
+                    total_metric = 'External/allWeb'
+                else
+                    total_metric = 'External/allOther'
+                end
+
+                metrics << total_metric
+                self.class.trace_execution_scoped(metrics) do
+                    call_public_url_without_newrelic_trace
+                end
+            end
+
+            alias :call_public_url_without_newrelic_trace :public_url
+            alias :public_url :call_public_url_with_newrelic_trace
+
+            alias :call_authenticted_url_without_newrelic_trace :authenticated_url
+            alias :authenticated_url :call_authenticted_url_with_newrelic_trace
 
             alias :call_store_without_newrelic_trace :store!
             alias :store! :call_store_with_newrelic_trace
