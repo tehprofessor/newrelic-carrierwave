@@ -1,7 +1,7 @@
 newrelic-carrierwave
 ====================
 
-NOTE: Currently Alpha software as there are no tests yet :-(
+Note: There are no tests because New Relic's test suite is crazy-town. This has been running in production on Househappy.org for over a year with no issues.
 
 ## CarrierWave Instrumentation 
 
