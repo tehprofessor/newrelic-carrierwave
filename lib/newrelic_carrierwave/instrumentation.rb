@@ -252,10 +252,10 @@ DependencyDetection.defer do
             ::CarrierWave::MiniMagick.class_eval do
                 include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
-                def manipulate_with_newrelic(options={}, &block)
+                def manipulate_with_newrelic(&block)
                   metrics = ["Custom/CarrierWave/Manipulate"]
                   self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(options, &block)
+                    manipulate_without_newrelic(&block)
                   end
                 end
 
