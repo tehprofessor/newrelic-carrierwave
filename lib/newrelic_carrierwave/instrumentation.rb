@@ -249,7 +249,7 @@ DependencyDetection.defer do
 
     executes do
         if defined?(::CarrierWave::MiniMagick)
-            ::CarrierWave::RMagick.class_eval do
+            ::CarrierWave::MiniMagick.class_eval do
                 include NewRelic::Agent::Instrumentation::ControllerInstrumentation
 
                 def manipulate_with_newrelic(&block)
