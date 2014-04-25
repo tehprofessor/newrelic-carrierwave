@@ -5,10 +5,13 @@ DependencyDetection.defer do
     @name = :carrierwave
 
     depends_on do
-        NewRelic::Agent.logger.debug 'Installing CarrierWave Storage Instrumentation'
         defined?(::CarrierWave) &&
         !NewRelic::Control.instance['disable_carrierwave_storage'] &&
         ENV['NEWRELIC_ENABLE'].to_s !~ /false|off|no/i
+    end
+
+    executes do 
+        NewRelic::Agent.logger.info 'Installing CarrierWave Storage Instrumentation'
     end
 
     executes do
@@ -140,10 +143,13 @@ DependencyDetection.defer do
     @name = :carrierwave_versions
 
     depends_on do
-        NewRelic::Agent.logger.debug("Installing CarrierWave Version Instrumentation")
         defined?(::CarrierWave) &&
         !NewRelic::Control.instance['disable_carrierwave_version'] &&
         ENV['NEWRELIC_ENABLE'].to_s !~ /false|off|no/i
+    end
+
+    executes do 
+        NewRelic::Agent.logger.info("Installing CarrierWave Version Instrumentation")
     end
 
     executes do
@@ -173,30 +179,30 @@ DependencyDetection.defer do
     end
 
     executes do
-        NewRelic::Agent.logger.debug 'Installing CarrierWave (VIPS) Image Processing Instrumentation'
+        NewRelic::Agent.logger.info 'Installing CarrierWave (VIPS) Image Processing Instrumentation'
     end
 
     executes do
-        if defined?(::CarrierWave::Vips)
-            ::CarrierWave::Vips.class_eval do
-                include ::NewRelic::Agent::MethodTracer
 
-                def manipulate_with_newrelic(&block)
-                  metrics = ["Custom/CarrierWave/Manipulate"]
-                  self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(&block)
-                  end
-                end
+        ::CarrierWave::Vips.class_eval do
+            include ::NewRelic::Agent::MethodTracer
 
-                alias :manipulate_without_newrelic :manipulate!
-                alias :manipulate! :manipulate_with_newrelic
-
-                add_method_tracer(:resize_image) # Used internally by the below methods
-                add_method_tracer(:resize_to_limit)
-                add_method_tracer(:resize_to_fill)
-
+            def manipulate_with_newrelic(&block)
+              metrics = ["Custom/CarrierWave/Manipulate/#{self.version_name}"]
+              self.class.trace_execution_scoped(metrics) do
+                manipulate_without_newrelic(&block)
+              end
             end
+
+            alias :manipulate_without_newrelic :manipulate!
+            alias :manipulate! :manipulate_with_newrelic
+
+            add_method_tracer(:resize_image) # Used internally by the below methods
+            add_method_tracer(:resize_to_limit)
+            add_method_tracer(:resize_to_fill)
+
         end
+
     end
 end
 
@@ -210,32 +216,32 @@ DependencyDetection.defer do
     end
 
     executes do
-        NewRelic::Agent.logger.debug 'Installing CarrierWave (RMagick) Image Processing Instrumentation'
+        NewRelic::Agent.logger.info 'Installing CarrierWave (RMagick) Image Processing Instrumentation'
     end
 
     executes do
-        if defined?(::CarrierWave::RMagick)
-            ::CarrierWave::RMagick.class_eval do
-                include ::NewRelic::Agent::MethodTracer
 
-                def manipulate_with_newrelic(options = {}, &block)
-                  metrics = ["Custom/CarrierWave/Manipulate"]
-                  self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(options, &block)
-                  end
-                end
+        ::CarrierWave::RMagick.class_eval do
+            include ::NewRelic::Agent::MethodTracer
 
-                alias :manipulate_without_newrelic :manipulate!
-                alias :manipulate! :manipulate_with_newrelic
-
-                add_method_tracer(:resize_to_limit)
-                add_method_tracer(:resize_to_fill)
-                add_method_tracer(:resize_and_pad)
-                add_method_tracer(:resize_to_geometry_string)
-                add_method_tracer(:convert)
-
+            def manipulate_with_newrelic(options = {}, &block)
+              metrics = ["Custom/CarrierWave/Manipulate/#{self.version_name}"]
+              self.class.trace_execution_scoped(metrics) do
+                manipulate_without_newrelic(options, &block)
+              end
             end
+
+            alias :manipulate_without_newrelic :manipulate!
+            alias :manipulate! :manipulate_with_newrelic
+
+            add_method_tracer(:resize_to_limit)
+            add_method_tracer(:resize_to_fill)
+            add_method_tracer(:resize_and_pad)
+            add_method_tracer(:resize_to_geometry_string)
+            add_method_tracer(:convert)
+
         end
+
     end
 end
 
@@ -249,33 +255,31 @@ DependencyDetection.defer do
     end
 
     executes do
-        NewRelic::Agent.logger.debug 'Installing CarrierWave (MiniMagick) Image Processing Instrumentation'
+        NewRelic::Agent.logger.info 'Installing CarrierWave (MiniMagick) Image Processing Instrumentation'
     end
 
     executes do
-        if defined?(::CarrierWave::MiniMagick)
-            ::CarrierWave::MiniMagick.class_eval do
-                include ::NewRelic::Agent::MethodTracer
-                
 
-                def manipulate_with_newrelic(&block)
-                  metrics = ["Custom/CarrierWave/Manipulate"]
-                  self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(&block)
-                  end
-                end
-
-                alias :manipulate_without_newrelic :manipulate!
-                alias :manipulate! :manipulate_with_newrelic
-
-                add_method_tracer(:resize_to_limit)
-                add_method_tracer(:resize_to_fill)
-                add_method_tracer(:resize_to_fit)
-                add_method_tracer(:resize_and_pad)
-                add_method_tracer(:convert)
-
+        ::CarrierWave::MiniMagick.class_eval do
+            include ::NewRelic::Agent::MethodTracer
+            
+            def manipulate_with_newrelic(&block)
+              metrics = ["Custom/CarrierWave/Manipulate/#{self.version_name}"]
+              self.class.trace_execution_scoped(metrics) do
+                manipulate_without_newrelic(&block)
+              end
             end
+
+            alias :manipulate_without_newrelic :manipulate!
+            alias :manipulate! :manipulate_with_newrelic
+
+            add_method_tracer(:resize_to_limit)
+            add_method_tracer(:resize_to_fill)
+            add_method_tracer(:resize_to_fit)
+            add_method_tracer(:resize_and_pad)
+            add_method_tracer(:convert)
         end
+
     end
 end
 
