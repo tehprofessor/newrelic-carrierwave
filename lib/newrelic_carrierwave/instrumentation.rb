@@ -13,6 +13,7 @@ DependencyDetection.defer do
 
     executes do
         ::CarrierWave::SanitizedFile.class_eval do
+            include ::NewRelic::Agent::MethodTracer
 
             def call_move_to_with_newrelic_trace(new_path, permissions=nil, directory_permissions=nil)
                 metrics = ["External/CarrierWave/Fog/move_to"]
@@ -53,6 +54,7 @@ DependencyDetection.defer do
         end
 
         ::CarrierWave::Storage::Fog::File.class_eval do
+            include ::NewRelic::Agent::MethodTracer
 
             def call_authenticted_url_with_newrelic_trace(options = {})
                 metrics = ["External/CarrierWave/Fog/authenticated_url"]
@@ -93,6 +95,8 @@ DependencyDetection.defer do
         end
 
         ::CarrierWave::Storage::Fog.class_eval do
+            include ::NewRelic::Agent::MethodTracer
+
             def call_store_with_newrelic_trace(file)
                 metrics = ["External/CarrierWave/Fog/store"]
 
@@ -144,7 +148,8 @@ DependencyDetection.defer do
 
     executes do
         ::CarrierWave::Uploader::Versions::ClassMethods.class_eval do
-  
+            include ::NewRelic::Agent::MethodTracer
+
             def version_with_newrelic_trace(name, options = {}, &block)
                 metrics = ["Custom/CarrierWave/Version/#{name}"]
                 self.class.trace_execution_scoped(metrics) do
@@ -174,7 +179,7 @@ DependencyDetection.defer do
     executes do
         if defined?(::CarrierWave::Vips)
             ::CarrierWave::Vips.class_eval do
-                include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+                include ::NewRelic::Agent::MethodTracer
 
                 def manipulate_with_newrelic(&block)
                   metrics = ["Custom/CarrierWave/Manipulate"]
@@ -211,7 +216,7 @@ DependencyDetection.defer do
     executes do
         if defined?(::CarrierWave::RMagick)
             ::CarrierWave::RMagick.class_eval do
-                include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+                include ::NewRelic::Agent::MethodTracer
 
                 def manipulate_with_newrelic(options = {}, &block)
                   metrics = ["Custom/CarrierWave/Manipulate"]
@@ -250,7 +255,8 @@ DependencyDetection.defer do
     executes do
         if defined?(::CarrierWave::MiniMagick)
             ::CarrierWave::MiniMagick.class_eval do
-                include NewRelic::Agent::Instrumentation::ControllerInstrumentation
+                include ::NewRelic::Agent::MethodTracer
+                
 
                 def manipulate_with_newrelic(&block)
                   metrics = ["Custom/CarrierWave/Manipulate"]
