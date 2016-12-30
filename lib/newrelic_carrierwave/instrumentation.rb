@@ -89,7 +89,7 @@ DependencyDetection.defer do
 
             alias :call_authenticted_url_without_newrelic_trace :authenticated_url
             alias :authenticated_url :call_authenticted_url_with_newrelic_trace
-            
+
         end
 
         ::CarrierWave::Storage::Fog.class_eval do
@@ -144,14 +144,14 @@ DependencyDetection.defer do
 
     executes do
         ::CarrierWave::Uploader::Versions::ClassMethods.class_eval do
-  
+
             def version_with_newrelic_trace(name, options = {}, &block)
                 metrics = ["Custom/CarrierWave/Version/#{name}"]
                 self.class.trace_execution_scoped(metrics) do
                     version_without_newrelic_trace(name, options, &block)
                 end
             end
-  
+
             alias :version_without_newrelic_trace :version
             alias :version :version_with_newrelic_trace
         end
@@ -255,7 +255,7 @@ DependencyDetection.defer do
                 def manipulate_with_newrelic(&block)
                   metrics = ["Custom/CarrierWave/Manipulate"]
                   self.class.trace_execution_scoped(metrics) do
-                    manipulate_without_newrelic(options, &block)
+                    manipulate_without_newrelic(&block)
                   end
                 end
 
